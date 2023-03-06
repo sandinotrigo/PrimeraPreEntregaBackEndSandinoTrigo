@@ -1,23 +1,20 @@
 class ProductManager {
-  //se crea la clase Manager
- //definimos productos como un arreglo vacio
-
   products = [];
   #codeaccumulator = 0;
 
-  addProduct(title, description, price, thumbnail, id, stock) { //addProduct agregara el producto en el array products
+  addProduct(title, description, price, thumbnail, code, stock) { 
     
-    const nuevoProducto = { //propiedades a ingresar del producto
-      
+    const nuevoProducto = { 
+      id:this.#codeaccumulator,
       title, 
       description,
       price,
       thumbnail,
-      id: this.#codeaccumulator,
+      code, 
       stock,
     };
 
-    const alreadyExists = this.products.some((p) => p.id === id);//se busca el id para retornarlo como valor booleano
+    const alreadyExists = this.products.some((p) => p.code === code);
 
     if (alreadyExists) {
       throw new Error("Producto o codigo repetido " );
@@ -31,29 +28,28 @@ class ProductManager {
   }
 
   getProducts() {
-    //Este metodo se encarga de retornar todos los productos
     return this.products;
   }
 
-  getProductsbyId(id){ //obtener solamente el producto que coincida su code con el id ingresada por el manager
-    const idIngresada = {id: this.#codeaccumulator,}
+  getProductsbyId(id){
+    const idIngresada = {id,}
                         
-    const code = this.#codeaccumulator;
+    //const id = this.#codeaccumulator;
     
-    const buscarId = this.products.find( (p) => p.id === id); //se busca en el array products con find (some no porque arroja booleanos)
+    const buscarId = this.products.find( (products) => products.id === id); 
       
 
     
 
     if(buscarId===idIngresada){
-      throw console.log("El producto es el siguiente" + buscarId); //Si el id ingresada coincide con lo que esta en code  se ejecuta
+      throw console.log("El producto es el siguiente" + buscarId); 
     }
   }
 }
 
 const manager = new ProductManager();
 
-manager.addProduct("manzana", "fruta", 10, "imagen", "1", 10);
-manager.addProduct("banana","fruta" ,100,"no","2",10);
+manager.addProduct("manzana", "fruta", 10, "imagen", "1a", 10);
+manager.addProduct("banana","fruta" ,100,"no","2a",10);
 console.log(manager.getProductsbyId(1));
-
+console.log(manager.getProducts());
