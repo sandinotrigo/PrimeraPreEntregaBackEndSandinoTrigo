@@ -1,11 +1,18 @@
-class ProductManager {
-  products = [];
-  #codeaccumulator = 0;
+const fs = require("fs")
 
-  addProduct(title, description, price, thumbnail, code, stock) { 
-    
-    const nuevoProducto = { 
-      id:this.#codeaccumulator,
+class ProductManager {
+  
+  #path = "./products.json"
+
+  /*constructor(path){
+    this.#path=path;
+  }*/
+  
+
+  async addProduct(title, description, price, thumbnail, code, stock) { 
+    let codeaccumulator=0;
+    const newProduct = { 
+      id:codeaccumulator++,
       title, 
       description,
       price,
@@ -13,43 +20,94 @@ class ProductManager {
       code, 
       stock,
     };
-
-    const alreadyExists = this.products.some((p) => p.code === code);
-
-    if (alreadyExists) {
-      throw new Error("Producto o codigo repetido " );
-    }
-    if (!title || !description || !price ||!thumbnail||!stock) {
-      throw new Error("Error, datos erroneos");
-    }
-
-    this.#codeaccumulator++; //esto es lo mismo que poner +1
-    this.products = [...this.products, nuevoProducto];
-  }
-
-  getProducts() {
-    return this.products;
-  }
-
-  getProductsbyId(id){
-    const idIngresada = {id,}
-                        
-    //const id = this.#codeaccumulator;
     
-    const buscarId = this.products.find( (products) => products.id === id); 
+    const products = await this.getProducts();
+
+    const updatedProducts = [...products,newProduct];
+
+    await fs.promises.writeFile (this.#path, JSON.stringify(updatedProducts))
+  }
+
+  async getProducts() {
+   try{
+    const products = await fs.promises.readFile(this.#path, "utf-8");
+
+    return JSON.parse(products)
+   }
+   catch(e) { return []}
+  }
+
+  
+  async getProductsbyid(id){
+    try {
+      const products = await this.getProducts();
       
+      const idfind= products.find((p) =>p.id ===id);
 
-    
-
-    if(buscarId===idIngresada){
-      throw console.log("El producto es el siguiente" + buscarId); 
+      if (idfind) {
+        return idfind
+      }
     }
+    catch (error) {
+      return "error1"
+    }
+    
+  }
+
+
+  async updateProductInfo(id,infoUpdate){}
+
+
+  async deleteProduct(id){
+    try{
+    const products = await this.getProducts();//para leer los productos
+    const idfind= products.find((p) =>p.id ===id);}//para rastrear en base a su id
+    
+    
+    if (idfind) {
+      return idfinds
+    }
+   
+
+  }
+
+  catch(error){
+    return "error"
   }
 }
 
-const manager = new ProductManager();
 
-manager.addProduct("manzana", "fruta", 10, "imagen", "1a", 10);
-manager.addProduct("banana","fruta" ,100,"no","2a",10);
-console.log(manager.getProductsbyId(1));
-console.log(manager.getProducts());
+
+
+
+
+
+
+
+async function main() {
+  const manager = new ProductManager();
+  
+  console.log(await manager.getProducts());
+
+  await manager.addProduct(
+    "bananas",
+    "fruta",
+    20,
+    "nophoto",
+    "asdsad",
+    "20"
+  );
+  /*await manager.addProduct(
+    "bananas",
+    "fruta",
+    20,
+    "nophoto",
+    "asdsad",
+    "20"
+  )*/
+  console.log(await manager.getProductsbyid(1));
+
+}
+
+main()
+
